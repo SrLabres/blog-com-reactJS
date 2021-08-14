@@ -1,1 +1,49 @@
-// TODO
+
+.postsList {
+  
+  list-style: none;
+
+  h2 {
+    color: var(--heading);
+    font-size: 2rem;
+    line-height: 2.5rem;
+    font-weight: 700;
+    transition: color 0.2s;
+  }
+
+  p {
+    color: var(--body);
+    margin-top: 0.6rem;
+    font-size: 1rem;
+  }
+
+  li + li {
+    margin-top: 3rem;
+  }
+
+  li {
+    span {
+      display: inline-block;
+      color: var(--info);
+      margin-top: 1rem;
+      font-size: 0.7rem;
+
+      & + span {
+        margin-left: 2rem;
+      }
+    }
+
+    &:hover h2 {
+      color: var(--highlight);
+    }
+
+  }
+
+  a {
+    display: block;
+    color: var(--highlight);
+    text-decoration: none;
+    font-size: 1rem;
+    margin-top: 3rem;
+  }
+}
