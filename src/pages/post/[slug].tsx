@@ -7,6 +7,9 @@ import Prismic from '@prismicio/client';
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 import { RichText } from 'prismic-dom';
+import { FiCalendar, FiUser } from 'react-icons/fi';
+import { useRouter } from 'next/router'
+
 
 interface Post {
   first_publication_date: string | null;
@@ -30,25 +33,51 @@ interface PostProps {
 }
 
  export default function Post({post}: PostProps) {
+  const router = useRouter()
 
+  if (router.isFallback) {
+    return (
+      <main>
+        <div>Carregando...</div>
+      </main>
+    )
+  }
+  function tempoDeLeitura() {
+    const redu = post.data.content.reduce((acumulador, valoratual) => {
+      const text = RichText.asText(valoratual.body).split(/\s/)
+      return acumulador + text.length
+    }, 0)
+
+    return Math.ceil(redu / 200)
+  }
   return (
     <>
       <Head>
         <title>{post.data.title} | Spacetraveling</title>
       </Head>
-      <main>
-        <img src={post.data.banner.url} alt={post.data.title} />
-        <article>
+      <main >
+        
+        <img src={post.data.banner.url} alt={post.data.title} className={styles.banner}/>
+        <article className={commonStyles.container}>
+          <div className={styles.article}>
           <h1>{post.data.title}</h1>
-
+          <div className={styles.info}>
+          <span><FiCalendar /> { format(new Date(post.first_publication_date), 'dd MMM yyyy',
+                    {
+                      locale: ptBR,
+                    }
+                  ) }</span><span><FiUser /> { post.data.author }</span>
+                  <span>{tempoDeLeitura()} min</span>
+          </div>
           {post.data.content.map(content => (
-            <article>
+            <div key={content.heading} className={styles.section}>
               <h2>{content.heading}</h2>
               <p>
-                { content.body[0].text }
+                { RichText.asText(content.body) }
               </p>
-            </article>
+            </div>
           ))}
+          </div>
         </article>
       </main>
     </>
@@ -61,13 +90,11 @@ interface PostProps {
     Prismic.predicates.at('document.type', 'posts'),
   ]);
 
-  const paths = posts.results.map(post => ({
-    params: { slug: post.uid },
-  }));
+  const paths = []
 
   return {
     paths,
-    fallback: 'blocking',
+    fallback: true,
   };
 };
 
@@ -79,9 +106,11 @@ interface PostProps {
    
 
    const post =  {
+     uid: response.uid,
      first_publication_date: response.first_publication_date,
      data: {
       title: response.data.title,
+      subtitle: response.data.subtitle,
       banner: {
         url: response.data.banner.url,
       },

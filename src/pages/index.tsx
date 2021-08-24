@@ -8,6 +8,7 @@ import { RichText } from 'prismic-dom';
 import { useState } from 'react';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
+import Link from 'next/link'
 
 
 interface Post {
@@ -52,7 +53,8 @@ interface HomeProps {
           <ul className={styles.postsList}>
             { posts.map((post) => (
               <li key={post.data.title}>
-                <a href={`/post/${post.uid}`}>
+                <Link href={`/post/${post.uid}`}>
+                <a>
                   <h2>{ post.data.title }</h2>
                   <p>{ post.data.subtitle}</p>
                   <span><FiCalendar /> { format(new Date(post.first_publication_date), 'dd MMM yyyy',
@@ -61,6 +63,7 @@ interface HomeProps {
                     }
                   ) }</span><span><FiUser /> { post.data.author }</span>
                 </a>
+                </Link>
               </li>
             ))}
             {nextPage != null ? <a onClick={() => carregarMaisPosts()}href="#">Carregar mais posts</a> : ''}
